@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 class ContactTest {
 
@@ -26,7 +27,7 @@ class ContactTest {
     @Test
     void getNumberTest() {
         // assert
-        assertEquals("89267095033", contact.getNumber());
+        assertThat(contact.getNumber(), equalTo("89267095033"));
     }
 
     @Test
@@ -34,7 +35,7 @@ class ContactTest {
         // act
         contact.setNumber("89003007007");
         // assert
-        assertEquals("89267095033", contact.getNumber());
+        assertThat(contact.getNumber(), equalTo("89267095033"));
     }
 
     @Test
@@ -44,19 +45,19 @@ class ContactTest {
         // act
         contact.setNumber("89003007007");
         // assert
-        assertEquals("89003007007", contact.getNumber());
+        assertThat(contact.getNumber(), equalTo("89003007007"));
     }
 
     @Test
     void getNameTest() {
         // assert
-        assertEquals("Maksim", contact.getName());
+        assertThat(contact.getName(), equalTo("Maksim"));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"Jon", "Sony", "Petr"})
     void setNameMultipleValuesTest(String name) {
         contact.setName(name);
-        assertEquals(name, contact.getName());
+        assertThat(contact.getName(), equalTo(name));
     }
 }

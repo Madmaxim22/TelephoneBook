@@ -11,6 +11,8 @@ import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PhoneBookTest {
@@ -30,6 +32,7 @@ class PhoneBookTest {
         // act
         phoneBook.addContacts(contact);
         phoneBook.addContacts(contact1);
+        phoneBook.addContacts(contact2);
         phoneBook.addGroup("Work");
         phoneBook.addContactInGroup("Work", "89267095033");
     }
@@ -45,15 +48,18 @@ class PhoneBookTest {
     @Test
     void addContactsTest() {
         // assert
-        assertTrue(phoneBook.getContactsList().contains(contact));
+        assertThat(phoneBook.getContactsList(), is(not(empty())));
+        assertThat(phoneBook.getContactsList(), contains(contact, contact1, contact2));
     }
 
     @Test
     void removeContactsIsContactListTest() {
         // act
         phoneBook.removeContacts("89267095033");
+        phoneBook.removeContacts("89264215237");
+        phoneBook.removeContacts("89054326759");
         // assert
-        assertFalse(phoneBook.getContactsList().contains(contact));
+        assertThat(phoneBook.getContactsList(), not(hasItems(contact, contact1, contact2)));
     }
 
     @Test
@@ -61,27 +67,27 @@ class PhoneBookTest {
         // arrange
         phoneBook.addContactInGroup("Work", "89267095033");
         // act
-        phoneBook.removeContacts("89267095033");
+        phoneBook.removeContactInGroup("89267095033");
         // assert
-        assertFalse(phoneBook.checkingContactInGroup("Work", contact));
+        assertThat(phoneBook.getGroupsList(), not(hasValue(contact)));
     }
 
     @Test
     void searchContactTest() {
         // assert
-        assertEquals(contact, phoneBook.searchContact("89267095033"));
+        assertThat(phoneBook.searchContact("89267095033"), equalTo(contact));
     }
 
     @Test
     void SearchForNonExistentContactTest() {
         // assert
-        assertNull(phoneBook.searchContact("89267095066"));
+        assertThat(phoneBook.searchContact("89267095066"), nullValue());
     }
 
     @Test
     void addGroupTest() {
         // assert
-        assertTrue(phoneBook.getGroupsList().containsKey("Work"));
+        assertThat(phoneBook.getGroupsList(), hasKey("Work"));
     }
 
     @Test
@@ -89,31 +95,16 @@ class PhoneBookTest {
         // act
         phoneBook.removeGroup("Work");
         // assert
-        assertFalse(phoneBook.getGroupsList().containsKey("Work"));
+        assertThat(phoneBook.getGroupsList(), not(hasKey("Work")));
     }
 
     @ParameterizedTest
     @CsvSource({"'Friend', '89267095033'", "'Work', '89264215237'"})
-    void addContactInGroup(String nameGroup, String number) {
+    void addContactInGroupTest(String nameGroup, String number) {
         // act
         phoneBook.addContactInGroup(nameGroup, number);
         // assert
         assertTrue(phoneBook.getGroupsList().get(nameGroup).contains(contact));
-    }
-
-
-    @Test
-    void addContactInNonExistingGroupTest() {
-        // assert
-        assertTrue(phoneBook.getGroupsList().get("Work").contains(contact));
-    }
-
-    @Test
-    void addExistingInGroupContactTest() {
-        // act
-        phoneBook.addContactInGroup("Work", "89267095033");
-        // assert
-        assertTrue(phoneBook.getGroupsList().get("Work").contains(contact));
     }
 
     @Test
@@ -152,14 +143,14 @@ class PhoneBookTest {
     @Test
     void getGroupsListTest() {
         // assert
-        assertTrue(phoneBook.getGroupsList().containsKey("Work"));
-        assertTrue(phoneBook.getGroupsList().containsValue(List.of(contact)));
+        assertThat(phoneBook.getGroupsList(), hasKey("Work"));
     }
 
     @Test
     void getContactsListTest() {
         // assert
-        assertTrue(phoneBook.getContactsList().contains(contact));
+        assertThat(phoneBook.getContactsList(), is(not(empty())));
+        assertThat(phoneBook.getContactsList(), contains(contact, contact1, contact2));
     }
 
     @Test
